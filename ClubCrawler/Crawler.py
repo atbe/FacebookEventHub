@@ -21,7 +21,7 @@ class Crawler(object):
 	def __init__(self, config_file_name):
 		self.config = self.get_config(config_file_name)
 
-		self.access_token = facebook.GraphAPI.get_app_access_token(
+		self.access_token = facebook.GraphAPI().get_app_access_token(
 			app_id=self.config['api_auth']['client_id'],
 			app_secret=self.config['api_auth']['client_secret']
 		)
@@ -70,7 +70,6 @@ class Club(object):
 		self.name = self.graph_node['name']
 
 	def _go_collect_events(self, api):
-		print("IMPLEMENT _go_collect_events")
 		events_json = api.request(self.id + '/events')
 		if DEBUG:
 			pprint(events_json)
