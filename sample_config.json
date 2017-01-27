@@ -1,0 +1,16 @@
+{
+	"api_auth" : {
+		"client_id" : "",
+	  	"client_secret" : ""
+	},
+
+  	"club_ids_to_crawl" : [
+		"hack.at.state",
+		"acmmsu",
+		"MSUWomenInComputing",
+		"spartasoft.msu",
+	  	"MSUDataScience"
+	],
+
+  	"number_of_events" : 5
+}
