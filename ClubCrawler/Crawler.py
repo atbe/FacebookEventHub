@@ -2,7 +2,7 @@ import facebook
 import json
 from pprint import pprint
 import requests
-
+from datetime import datetime
 """
 
 Spartan Hackers: bit.ly/cseSHmsu
@@ -38,7 +38,7 @@ class Crawler(object):
 		:param club_ids: An array of the id's to crawl.
 		:return: Club objects build from the id's
 		"""
-		return [Club(id, self.api) for id in club_ids]
+		return [Club(id, self.api, int(self.config['number_of_events'])) for id in club_ids]
 
 """
 Spartan Hackers Event Info:
@@ -55,7 +55,7 @@ Spartan Hackers Event Info:
 
 class Club(object):
 
-	def __init__(self, id, api):
+	def __init__(self, id, api, number_of_events):
 		self.id = id
 		# self.graph_node = api.get_connections(id, connection_name='groups'
 		self.graph_node = api.request(id.strip())
@@ -63,20 +63,21 @@ class Club(object):
 			print(dir(self.graph_node))
 			pprint(self.graph_node)
 
-		self.club_events = self._go_collect_events(api)
+		self.club_events = self._go_collect_events(api, number_of_events)
 
 		# input("Press enter to continue")
 
 		self.name = self.graph_node['name']
 
-	def _go_collect_events(self, api):
+	def _go_collect_events(self, api, number_of_events):
 		events_json = api.request(self.id + '/events')
 		if DEBUG:
 			pprint(events_json)
 			pprint(events_json.keys())
 
 		# TODO: Club might not have 5, possible index error
-		latest_5_events = [Event(event) for event in events_json['data']][:5]
+		events_json['data'].sort(key=lambda k: k['start_time'], reverse=True)
+		latest_5_events = [Event(event, self.graph_node['name'], self.id) for event in events_json['data']][:number_of_events]
 		if DEBUG:
 			print(latest_5_events)
 
@@ -84,10 +85,13 @@ class Club(object):
 
 class Event(object):
 
-	def __init__(self, event_json):
+	def __init__(self, event_json, club_name, club_id):
 		self.name = event_json.get('name', None)
 		self.start_date_time = event_json.get('start_time', None)
 		self.end_date_time = event_json.get('end_time', None)
 		self.id = event_json.get('id', None)
-		self.location = event_json.get('location', None)
+		self.place = event_json.get('place', None)
 		self.timezone = event_json.get('timezone', None)
+		self.description = event_json.get('description', None)
+		self.club_name = club_name
+		self.club_id = club_id
