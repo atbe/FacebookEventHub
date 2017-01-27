@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+     <link href="static/css/cse-event.css" rel="stylesheet" />
+    <title>MSU CSE Event Hub</title>
+</head>
+<body>
+
+
+
+{% if events %}
+    {% for event in events %}
+        <div>
+            <div class="container cse-event">
+                <div class="cse-event-header-content cse-event-title">
+                    <h5><a target="_blank" href="{{ 'https://www.facebook.com/' + event['club_id'] }}">{{ event['club_name'] }}</a> - <a target="_blank" href="{{ 'https://www.facebook.com/events/' + event['id'] }}"> {{ event['name'] }}</a></h5>
+                </div>
+
+                <div class="cse-event-date-and-time">
+                    {{ event['start_date_time'] }}
+                </div>
+
+                {% if event['description'] != None and event['description']|length > 0 %}
+                   <button type="button" class="btn btn-info" data-toggle="collapse" data-target="{{ '#description' + event['id']}}">
+                       Description
+                    </button>
+                    <div class="collapse out cse-event-description" id="{{ 'description' + event['id'] }}">
+                        {{ event['description'] }}
+                    </div>
+                {% else %}
+                    <dd>
+                        No description
+                    </dd>
+                {% endif %}
+
+            </div>
+        </div>
+
+    {% endfor %}
+{% else %}
+    ERROR: EVENTS NOT FOUND
+{% endif %}
+
+</body>
+</html>

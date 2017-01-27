@@ -1,0 +1,29 @@
+html {
+    width: auto;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cse-event {
+    outline: 1px solid indigo;
+    padding: 3px;
+    margin: 5px;
+    width: auto;
+}
+
+.cse-event-club-name {
+	display: inline-block;
+    width: auto;
+}
+
+.cse-event-title {
+    padding: 2px;
+}
+
+.cse-event-description {
+    padding: 5px;
+}
+
+.cse-event-date-and-time {
+    padding: inherit;
+}
