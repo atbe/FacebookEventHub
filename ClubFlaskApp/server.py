@@ -14,9 +14,9 @@ events.sort(key= lambda k: k['start_date_time'], reverse=True)
 
 # make the time stamps more readable
 for event in events:
-	event['start_date_time'] = datetime.strptime(event['start_date_time'], '%Y-%m-%dT%H:%M:%S%z').strftime(
-		'%A %B %d, %Y, at %I:%M%p'
-	)
+	event['start_date_time'] = datetime.strptime(event['start_date_time'], '%Y-%m-%dT%H:%M:%S%z')
+	event['date_time_str'] = event['start_date_time'].strftime('%A %B %d, %Y, at %I:%M%p')
+	event['epoch'] = int(event['start_date_time'].timestamp())
 
 # single page web apps rock, tehe
 @app.route('/')

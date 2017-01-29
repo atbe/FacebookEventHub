@@ -1,14 +1,14 @@
 html {
-    width: auto;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
+    width: auto;
+
 }
 
 .cse-event {
     outline: 1px solid indigo;
-    padding: 3px;
+    padding: 2px;
     margin: 5px;
-    width: auto;
 }
 
 .cse-event-club-name {
@@ -25,5 +25,26 @@ html {
 }
 
 .cse-event-date-and-time {
-    padding: inherit;
+    display: block;
+}
+
+.cse-event-club-logo {
+    width: 50px;
+    height: 50px;
+}
+
+.cse-event-title {
+    font-size: 18px;
+}
+
+/* Mobile */
+@media screen and (max-width: 500px) {
+    .cse-event-club-logo {
+        width: 30px;
+        height: 30px;
+    }
+
+    .cse-event-title {
+        font-size: 12px;
+    }
 }

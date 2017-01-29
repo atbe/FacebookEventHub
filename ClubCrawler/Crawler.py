@@ -55,29 +55,33 @@ Spartan Hackers Event Info:
 
 class Club(object):
 
-	def __init__(self, id, api, number_of_events):
-		self.id = id
-		# self.graph_node = api.get_connections(id, connection_name='groups'
-		self.graph_node = api.request(id.strip())
+	def __init__(self, group_name_id, api, number_of_events):
+		self.group_name_id = group_name_id.strip()
+		graph_node = api.request(self.group_name_id)
 		if DEBUG:
-			print(dir(self.graph_node))
-			pprint(self.graph_node)
+			print('graph_node=', graph_node)
 
+		self.name = graph_node['name']
+		self.id = graph_node['id']
+
+		self.cover_image_url = self._go_collect_cover_image(api)
 		self.club_events = self._go_collect_events(api, number_of_events)
 
-		# input("Press enter to continue")
-
-		self.name = self.graph_node['name']
+	def _go_collect_cover_image(self, api):
+		# without redict=false, request would return raw image data
+		group_image_graph_node = api.request('{}/picture/'.format(self.id),
+		                                     args={'height': 250, 'type': 'square', 'access_token': api.access_token, 'redirect': 'false'})
+		return group_image_graph_node['data']['url']
 
 	def _go_collect_events(self, api, number_of_events):
-		events_json = api.request(self.id + '/events')
+		events_json = api.request(self.group_name_id + '/events')
 		if DEBUG:
 			pprint(events_json)
 			pprint(events_json.keys())
 
 		# TODO: Club might not have 5, possible index error
 		events_json['data'].sort(key=lambda k: k['start_time'], reverse=True)
-		latest_5_events = [Event(event, self.graph_node['name'], self.id) for event in events_json['data']][:number_of_events]
+		latest_5_events = [Event(event, self.name, self.group_name_id, self.cover_image_url, api) for event in events_json['data']][:number_of_events]
 		if DEBUG:
 			print(latest_5_events)
 
@@ -85,7 +89,7 @@ class Club(object):
 
 class Event(object):
 
-	def __init__(self, event_json, club_name, club_id):
+	def __init__(self, event_json, club_name, club_id, club_cover_image_url, api):
 		self.name = event_json.get('name', None)
 		self.start_date_time = event_json.get('start_time', None)
 		self.end_date_time = event_json.get('end_time', None)
@@ -95,3 +99,4 @@ class Event(object):
 		self.description = event_json.get('description', None)
 		self.club_name = club_name
 		self.club_id = club_id
+		self.club_cover_image_url = club_cover_image_url
