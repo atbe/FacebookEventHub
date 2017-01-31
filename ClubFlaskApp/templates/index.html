@@ -2,115 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-     <link href="static/css/cse-event.css" rel="stylesheet" />
+    <link href="static/css/cse-event.css" rel="stylesheet" />
 
     <title>MSU CSE Event Hub</title>
 
-<script>
-$(document).ready( function() {
-    showThisMonthEvents();
-});
+    <script type="text/javascript">
+        $(document).ready( function() {
+            showThisWeekEvents();
+        });
 
-/** Hides any event who's start time is not
- * within timeDesired of current time
- *
- * @param timeDesired: time from now in seconds
- */
-function filterEventsByTimeDistance(timeDesired) {
-    $('.cse-event').each(function(i, obj) {dateTimeStr = obj.getElementsByClassName('cse-event-date-and-time')[0].innerHTML;
-        var epoch = obj.getElementsByClassName('event_epoch')[0].getAttribute("value");
-        var seconds = (new Date).getTime() / 1000;
+        /** Hides any event who's start time is not
+         * within timeDesired of current time
+         *
+         * @param timeDesired: time from now in seconds
+         */
+        function filterEventsByTimeDistance(timeDesired) {
+            $('.cse-event').each(function(i, obj) {dateTimeStr = obj.getElementsByClassName('cse-event-date-and-time')[0].innerHTML;
+                var epoch = obj.getElementsByClassName('event_epoch')[0].getAttribute("value");
+                var seconds = (new Date).getTime() / 1000;
 
-        // (7 * 24 * 60 * 60) =  604800 - This week
-        // (7 * 24 * 60 * 60 * 4) = 2419200 - This month
-        if ((seconds - epoch) > timeDesired) {
-            obj.setAttribute("hidden", true);
-        } else {
-            // in-case the item was hidden before
-            obj.removeAttribute("hidden");
+                // (7 * 24 * 60 * 60) =  604800 - This week
+                // (7 * 24 * 60 * 60 * 4) = 2419200 - This month
+                if ((seconds - epoch) > timeDesired) {
+                    obj.setAttribute("hidden", true);
+                } else {
+                    // in-case the item was hidden before
+                    obj.removeAttribute("hidden");
+                }
+            });
         }
-    });
-}
 
-function revealAllEvents() {
-    $('.cse-event').each(function(i, obj) {
-        obj.removeAttribute("hidden");
-    });
-}
+        function revealAllEvents() {
+            $('.cse-event').each(function(i, obj) {
+                obj.removeAttribute("hidden");
+            });
+        }
 
-function showThisWeekEvents() {
-//    (7 * 24 * 60 * 60) =  604800 - This week
-    filterEventsByTimeDistance(604800);
-}
+        function showThisWeekEvents() {
+            //    (7 * 24 * 60 * 60) =  604800 - This week
+            filterEventsByTimeDistance(604800);
+        }
 
-function showThisMonthEvents() {
-//    (30 * 24 * 60 * 60) = 2419200 - This month (30 days)
-    filterEventsByTimeDistance(2592000);
-}
+        function showThisMonthEvents() {
+            //    (30 * 24 * 60 * 60) = 2419200 - This month (30 days)
+            filterEventsByTimeDistance(2592000);
+        }
 
-</script>
+        function changeFunc() {
+            var selectBox = document.getElementById("selectBox");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+
+            switch(selectedValue) {
+                case "week":
+                    showThisWeekEvents();
+                    break;
+                case "month":
+                    showThisMonthEvents();
+                    break;
+                case "all":
+                    revealAllEvents();
+                    break;
+            }
+        }
+
+    </script>
 
 
 </head>
+
 <body>
 
-<div class="container">
+<div class="container-fluid">
 
-    <div class="btn-group" data-toggle="buttons" >
-      <label class="btn btn-primary active" onclick="showThisWeekEvents()">
-        <input type="radio" name="options" id="option1" autocomplete="off" checked>This Week
-      </label>
-      <label class="btn btn-primary" onclick="showThisMonthEvents()">
-        <input type="radio" name="options" id="option2" autocomplete="off">This Month
-      </label>
-      <label class="btn btn-primary" onclick="revealAllEvents()">
-        <input type="radio" name="options" id="option3" autocomplete="off">All Events
-      </label>
+    <!--I find the dropdown a little ugly but it works for now.-->
+    <div class="row">
+
+        <div class="form-group col-xs-6 col-md-4">
+            <select class="form-control" id="selectBox" onchange="changeFunc();">
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="all">All Events</option>
+            </select>
+        </div>
+
     </div>
 
-    {% if events %}
-        {% for event in events %}
-            <div class="container cse-event">
-                <div class="cse-event-header-content cse-event-title row">
-                    <div class="col-xs-1">
-                        <a target="_blank" href="{{ 'https://www.facebook.com/' + event['club_id'] }}"><img src="{{ event['club_cover_image_url'] }}" class="cse-event-club-logo"></a>
-                    </div>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-                    <div class="col-xs-11">
-                        <input class="event_epoch" type="hidden" name="Language" value="{{ event['epoch'] }}">
-                        <span class="cse-event-title"><a target="_blank" href="{{ 'https://www.facebook.com/events/' + event['id'] }}"> {{ event['name'] }}</a></span>
-                        <span class="cse-event-date-and-time">{{ event['date_time_str'] }}</span>
-                    </div>
+        {% set count = 0 -%}
+        {% if events %}
+            {% for event in events %}
 
-                </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="heading{{ loop.index }}">
+                    <h4 class="panel-title">
+                        <!--TODO: Don't use expand button, make the enclosing div the anchor. (independant of clicking title/logo) -->
+                        {% if loop.index == 1 %}
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}"> Expand </a>
+                        {% else %}
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}"> Expand </a>
+                        {% endif %}
+                        <div class="cse-event-header-content cse-event-title row">
+                            <div class="col-xs-1">
+                                <a target="_blank" href="{{ 'https://www.facebook.com/' + event['club_id'] }}"><img src="{{ event['club_cover_image_url'] }}" class="cse-event-club-logo"></a>
+                            </div>
 
-                <div>
-                    {% if event['description'] != None and event['description']|length > 0 %}
-                       <button type="button" class="btn-xs btn-info" data-toggle="collapse" data-target="{{ '#description' + event['id']}}">
-                           Description
-                        </button>
-                        <div class="collapse out cse-event-description" id="{{ 'description' + event['id'] }}">
-                            {{ event['description'] }}
+                            <div class="col-xs-11">
+                                <input class="event_epoch" type="hidden" name="Language" value="{{ event['epoch'] }}">
+                                <span class="cse-event-title"><a target="_blank" href="{{ 'https://www.facebook.com/events/' + event['id'] }}">{{ event['name'] }}</a></span>
+                                <span class="cse-event-date-and-time">{{ event['date_time_str'] }}</span>
+                            </div>
                         </div>
-                    {% else %}
-                        <dd>
-                            No description
-                        </dd>
-                    {% endif %}
+                    </h4>
                 </div>
 
+            <!--Remove the below condition to prevent the first element from being expanded by default.-->
+            {% if loop.index == 1 %}
+                <div id="collapse{{ loop.index }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{ loop.index }}">
+            {% else %}
+                <div id="collapse{{ loop.index }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ loop.index }}">
+            {% endif %}
+                    <!--Below is where the event info goes.-->
+                    <div class="panel-body">
+                        {% if event['description'] != None and event['description']|length > 0 %}
+                            {{ event['description'] }}
+                        {% else %}
+                            <dd>
+                                No description
+                            </dd>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
 
-        {% endfor %}
-    {% else %}
-        ERROR: EVENTS NOT FOUND
-    {% endif %}
+                {% set count = count + 1 %}
+            {% endfor %}
+        {% else %}
+            ERROR: EVENTS NOT FOUND
+        {% endif %}
 
-</div>
+        </div>
+
+    </div>
 
 </body>
 </html>
