@@ -12,3 +12,15 @@ I'm not a web designer but I think I can find a friend who can help me setup the
 
 - [Facebook Graph API](https://developers.facebook.com/docs/graph-api/)
 - [Flask for Python](flask.pocoo.org)
+
+### How to start the server locally
+
+Assuming you have flask installed, run the following from the root folder of the project:
+
+```bash
+cd ClubFlaskApp
+export FLASK_APP=server.py
+flask run
+```
+
+That's it!
