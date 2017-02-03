@@ -3,6 +3,8 @@ import json
 from pprint import pprint
 import requests
 from datetime import datetime
+import sys
+import os
 """
 
 Spartan Hackers: bit.ly/cseSHmsu
@@ -16,14 +18,21 @@ Hackathon Hackers: bit.ly/hackHack
 
 DEBUG = True
 
+FACEBOOK_APP_ID_ENVIRONMENT_VAR_KEY = "FB_EH_APPID"
+FACEBOOK_APP_SECRET_ENVIRONMENT_VAR_KEY = "FB_EH_APPSECRET"
+
 class Crawler(object):
 
 	def __init__(self, config_file_name):
 		self.config = self.get_config(config_file_name)
 
+		if os.getenv(FACEBOOK_APP_ID_ENVIRONMENT_VAR_KEY) == None or \
+						os.getenv(FACEBOOK_APP_SECRET_ENVIRONMENT_VAR_KEY) == None:
+			raise EnvironmentError("Your environment variables do not contain the Facebook authentication keys.")
+
 		self.access_token = facebook.GraphAPI().get_app_access_token(
-			app_id=self.config['api_auth']['client_id'],
-			app_secret=self.config['api_auth']['client_secret']
+			app_id= os.getenv(FACEBOOK_APP_ID_ENVIRONMENT_VAR_KEY),
+			app_secret= os.getenv(FACEBOOK_APP_SECRET_ENVIRONMENT_VAR_KEY)
 		)
 		self.api = facebook.GraphAPI(self.access_token)
 		self.clubs = self.crawl_clubs(self.config['club_ids_to_crawl'])
