@@ -45,3 +45,4 @@ __pycache__/
 
 # crawler config should never be pushed unless repo is private
 config.json
+keys.sh
