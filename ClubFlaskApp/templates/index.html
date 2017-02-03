@@ -21,7 +21,7 @@
          * @param timeDesired: time from now in seconds
          */
         function filterEventsByTimeDistance(timeDesired) {
-            $('.cse-event').each(function(i, obj) {dateTimeStr = obj.getElementsByClassName('cse-event-date-and-time')[0].innerHTML;
+            $('.cse-event-panel').each(function(i, obj) {dateTimeStr = obj.getElementsByClassName('cse-event-date-and-time')[0].innerHTML;
                 var epoch = obj.getElementsByClassName('event_epoch')[0].getAttribute("value");
                 var seconds = (new Date).getTime() / 1000;
 
@@ -37,7 +37,7 @@
         }
 
         function revealAllEvents() {
-            $('.cse-event').each(function(i, obj) {
+            $('.cse-event-panel').each(function(i, obj) {
                 obj.removeAttribute("hidden");
             });
         }
@@ -97,7 +97,7 @@
         {% if events %}
             {% for event in events %}
 
-            <div class="panel panel-default">
+            <div class="panel panel-default cse-event-panel">
                 <div class="panel-heading" role="tab" id="heading{{ loop.index }}">
                     <h4 class="panel-title">
                         <!--TODO: Don't use expand button, make the enclosing div the anchor. (independant of clicking title/logo) -->
